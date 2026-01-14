@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>红军东征纪念馆 - 智能展厅接待系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 首页 - 密钥配置页 -->
+    <div id="config-page" class="page active">
+        <div class="config-container">
+            <div class="config-header">
+                <h1>🏛️ 红军东征纪念馆</h1>
+                <h2>智能展厅接待系统</h2>
+            </div>
+            
+            <div class="config-content">
+                <div class="config-card">
+                    <h3>🔑 GLM API KEY 配置</h3>
+                    
+                    <div class="key-status">
+                        <span class="status-label">当前密钥类型：</span>
+                        <span id="key-type" class="status-value">未设置</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="api-key">API KEY</label>
+                        <input 
+                            type="password" 
+                            id="api-key" 
+                            placeholder="请输入您的 GLM API KEY"
+                            autocomplete="off"
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                    
+                    <div class="key-hint">
+                        <p>💡 提示：您可以选择使用内置测试密钥或输入自己的API KEY</p>
+                    </div>
+                    
+                    <div class="config-buttons">
+                        <button class="btn btn-primary" onclick="useTestKey()">
+                            使用测试密钥
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveCustomKey()">
+                            保存自定义密钥
+                        </button>
+                    </div>
+                    
+                    <div class="key-actions">
+                        <button class="btn-link" onclick="clearKey()">
+                            🗑️ 清除密钥
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="config-footer">
+                <button class="btn btn-success btn-large" onclick="enterHall()">
+                    🚀 进入展厅
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 展厅接待主界面 -->
+    <div id="hall-page" class="page">
+        <div class="hall-container">
+            <!-- 左侧：数字人展示区 -->
+            <div class="avatar-section">
+                <div id="avatar-container" class="avatar-wrapper">
+                    <!-- 数字人将在这里渲染 -->
+                    <div class="avatar-placeholder">
+                        <div class="placeholder-content">
+                            <div class="placeholder-icon">🤖</div>
+                            <p>数字人加载中...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数字人控制栏 -->
+                <div class="avatar-controls">
+                    <div class="connection-status" id="connection-status">
+                        <span class="status-indicator offline"></span>
+                        <span class="status-text">未连接</span>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button id="connect-btn" class="btn btn-control" onclick="toggleConnection()">
+                            🔌 连接数字人
+                        </button>
+                        <button class="btn btn-control" onclick="adjustVolume()">
+                            🔊 音量
+                        </button>
+                        <button class="btn btn-control" onclick="toggleDebug()">
+                            🐛 调试
+                        </button>
+                    </div>
+                    
+                    <div class="volume-slider" id="volume-slider" style="display: none;">
+                        <input 
+                            type="range" 
+                            id="volume-input" 
+                            min="0" 
+                            max="1" 
+                            step="0.1" 
+                            value="0.8"
+                            onchange="setVolume(this.value)"
+                        >
+                        <span id="volume-value">80%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：交互控制区 -->
+            <div class="interaction-section">
+                <!-- 顶部：标题 -->
+                <div class="section-header">
+                    <h1>🏛️ 红军东征纪念馆</h1>
+                    <p>智能讲解系统</p>
+                </div>
+                
+                <!-- 中部：预置问题列表 -->
+                <div class="preset-questions">
+                    <h3>❓ 快速提问</h3>
+                    <div class="questions-grid" id="questions-grid">
+                        <!-- 预置问题将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 对话历史 -->
+                <div class="chat-history">
+                    <h3>💬 对话历史</h3>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message system">
+                            <div class="message-content">
+                                <p>欢迎来到红军东征纪念馆！我是您的智能讲解员，有什么可以帮助您的吗？</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 底部：输入框 -->
+                <div class="input-section">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="user-input" 
+                            placeholder="请输入您的问题..."
+                            rows="3"
+                        ></textarea>
+                        <button class="btn-send" onclick="sendMessage()" id="send-btn">
+                            📤 发送
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载提示 -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p id="loading-text">加载中...</p>
+    </div>
+
+    <!-- 引入SDK -->
+    <script src="https://media.xingyun3d.com/xingyun3d/general/litesdk/xmovAvatar@latest.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/digitalHuman.js"></script>
+    <script src="js/glmAI.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
